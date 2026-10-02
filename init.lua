@@ -245,6 +245,19 @@ do
     group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
     callback = function() vim.hl.on_yank() end,
   })
+
+  -- Use 4-space indentation for C# (matches dotnet-format / VS defaults)
+  vim.api.nvim_create_autocmd('FileType', {
+    desc = 'Set 4-space indentation for C#',
+    pattern = 'cs',
+    group = vim.api.nvim_create_augroup('custom-cs-indent', { clear = true }),
+    callback = function()
+      vim.bo.tabstop = 4
+      vim.bo.shiftwidth = 4
+      vim.bo.softtabstop = 4
+      vim.bo.expandtab = true
+    end,
+  })
 end
 
 -- ============================================================
@@ -767,7 +780,14 @@ do
   }
 
   -- Automatically install LSPs and related tools to stdpath for Neovim
-  require('mason').setup {}
+  require('mason').setup {
+    -- Extra registry that carries an up-to-date `roslyn-language-server`
+    -- (the C# LSP). The default registry's version can lag behind.
+    registries = {
+      'github:mason-org/mason-registry',
+      'github:Crashdummyy/mason-registry',
+    },
+  }
 
   -- Ensure the servers and tools above are installed
   --
